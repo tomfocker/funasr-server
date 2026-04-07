@@ -86,6 +86,61 @@ LLM 角色既可以使用 Ollama 运行的本地模型，又可以用 API 访问
 5.  **开始录音**：按住 `CapsLock键` 或 `鼠标侧键X2` 就可以说话了！
 
 
+## 🐳 Docker API Service（本分支新增）
+
+这个分支额外提供了一个只面向 `Fun-ASR-Nano` 的 Docker 服务层，适合 Linux 容器部署：
+
+-   **HTTP API**：提供 `/v1/audio/transcriptions` 和 `/api/transcriptions`
+-   **健康检查**：提供 `/healthz`
+-   **OpenAPI 文档**：提供 `/docs`
+-   **开箱即用**：容器首次启动时自动下载 `Fun-ASR-Nano-GGUF` 模型到持久卷
+
+这里现在只保留语音识别服务本身。
+
+-   前端 `video-cuter` 仓库负责纯浏览器剪辑
+-   完整版整合仓库负责前端 + 识别服务联动
+
+默认推荐策略：
+
+-   **主镜像不内置模型**
+-   **首次启动自动下载到 `/data/models/...`**
+-   **如需离线或加速首启，再手动挂载本地模型目录**
+
+如果你已经手动下载了模型，建议挂载到：
+
+```bash
+./Fun-ASR-Nano-GGUF:/app/Fun-ASR-Nano-GGUF:ro
+```
+
+快速启动：
+
+```bash
+docker compose up --build
+```
+
+启动后可访问：
+
+-   `http://localhost:8000/`：服务摘要
+-   `http://localhost:8000/docs`：OpenAPI 文档
+-   `http://localhost:8000/healthz`：健康检查
+
+接口调用示例：
+
+```bash
+curl -F file=@sample.wav \
+     -F response_format=verbose_json \
+     http://localhost:8000/v1/audio/transcriptions
+```
+
+如果是同一 Compose 网络里的其他容器，可以直接调用：
+
+```bash
+http://capswriter-funasr:8000/v1/audio/transcriptions
+```
+
+更完整的使用说明见 `docs/docker-api-service.md`。
+
+
 ## 🎤 模型说明
 
 你可以在 `config_server.py` 的 `model_type` 中切换：

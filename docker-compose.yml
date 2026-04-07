@@ -1,0 +1,19 @@
+services:
+  capswriter-funasr:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: funasr-server:latest
+    ports:
+      - "8000:8000"
+    expose:
+      - "8000"
+    environment:
+      CW_HOST: 0.0.0.0
+      CW_PORT: 8000
+      CW_DATA_DIR: /data
+      CW_AUTO_DOWNLOAD_MODEL: "1"
+      CW_VULKAN_ENABLE: "0"
+      CW_DML_ENABLE: "0"
+    volumes:
+      - ./.docker-data:/data

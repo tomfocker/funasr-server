@@ -142,6 +142,7 @@ cython_debug/
 
 # VS Code 设置
 .vscode/
+.DS_Store
 
 # --- 本项目特定忽略 ---
 
@@ -154,6 +155,9 @@ models/*.py
 
 # 日志文件夹（包含 server_*.log 和 client_*.log）
 logs/
+.data/
+.docker-data/
+Fun-ASR-Nano-GGUF/
 
 # 音频文件
 *.mp3

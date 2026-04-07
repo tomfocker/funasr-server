@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+jinja2
+python-multipart
+
+numpy
+onnxruntime
+gguf
+rich
+pydub
+pypinyin
+numba
+srt
+watchdog

@@ -11,6 +11,7 @@ from gguf.constants import GGML_QUANT_SIZES, GGMLQuantizationType
 from typing import List, Union, Set, Optional
 from pathlib import Path
 from os.path import relpath
+from capsweb.shared_libs import resolve_shared_library_path
 from . import logger
 
 # =========================================================================
@@ -193,9 +194,9 @@ def init_llama_lib():
         GGML_BASE_DLL = "libggml-base.so"
         LLAMA_DLL = "libllama.so"
 
-    ggml = ctypes.CDLL(os.path.join(lib_dir, GGML_DLL))
-    ggml_base = ctypes.CDLL(os.path.join(lib_dir, GGML_BASE_DLL))
-    llama = ctypes.CDLL(os.path.join(lib_dir, LLAMA_DLL))
+    ggml = ctypes.CDLL(str(resolve_shared_library_path(lib_dir, GGML_DLL)))
+    ggml_base = ctypes.CDLL(str(resolve_shared_library_path(lib_dir, GGML_BASE_DLL)))
+    llama = ctypes.CDLL(str(resolve_shared_library_path(lib_dir, LLAMA_DLL)))
 
     # 设置日志回调
     LOG_CALLBACK = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_char_p, ctypes.c_void_p)
