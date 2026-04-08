@@ -162,6 +162,25 @@ curl -F file=@sample.wav \
 ./.venv/bin/python -m pytest -q
 ```
 
+## Docker Hub 自动发布
+
+本仓库现在会自己负责后端镜像发布。
+
+工作流见：
+
+- `.github/workflows/dockerhub.yml`
+
+会自动发布：
+
+- `tomfocker/funasr-server`
+
+需要在 GitHub 仓库里配置：
+
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
+
+如果 secrets 还没填，workflow 会自动跳过，不会直接失败。
+
 ## 致谢
 
 本仓库的底层实现基础来自这些优秀项目：
