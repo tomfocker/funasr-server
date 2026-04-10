@@ -17,6 +17,13 @@ class TranscriptionOrchestrator:
         self.models = models
         self.decoder = StreamDecoder(models)
 
+    @staticmethod
+    def _accumulate_timing_field(target_timings, source_timings, field: str) -> None:
+        source_value = getattr(source_timings, field, 0.0)
+        if source_value == 0.0 and not hasattr(target_timings, field):
+            return
+        setattr(target_timings, field, getattr(target_timings, field, 0.0) + source_value)
+
     def transcribe(
         self,
         audio_path: str,
@@ -156,19 +163,23 @@ class TranscriptionOrchestrator:
                 'ctc_text': "".join([r.text for r in d_res.ctc_results]) if d_res.ctc_results else ""
             })
             
-            # Accumulate timings
-            result.timings.encode += d_res.timings.encode
-            result.timings.ctc += d_res.timings.ctc
-            result.timings.ctc_infer += d_res.timings.ctc_infer
-            result.timings.ctc_decode += d_res.timings.ctc_decode
-            result.timings.ctc_cast += getattr(d_res.timings, 'ctc_cast', 0)
-            result.timings.ctc_argmax += getattr(d_res.timings, 'ctc_argmax', 0)
-            result.timings.ctc_loop += getattr(d_res.timings, 'ctc_loop', 0)
-            result.timings.hotword_verify += getattr(d_res.timings, 'hotword_verify', 0)
-            result.timings.prepare += d_res.timings.prepare
-            result.timings.inject += d_res.timings.inject
-            result.timings.llm_generate += d_res.timings.llm_generate
-            result.timings.align += d_res.timings.align
+            # Accumulate timings while remaining compatible with both the
+            # current slim Timings schema and older extended timing fields.
+            for field in (
+                "encode",
+                "ctc",
+                "prepare",
+                "inject",
+                "llm_generate",
+                "align",
+                "ctc_infer",
+                "ctc_decode",
+                "ctc_cast",
+                "ctc_argmax",
+                "ctc_loop",
+                "hotword_verify",
+            ):
+                self._accumulate_timing_field(result.timings, d_res.timings, field)
 
         reporter.set_segment(0, 0)
         reporter.skip_technical = False
