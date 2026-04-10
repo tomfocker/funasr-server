@@ -32,10 +32,11 @@ docker compose up --build
 默认按下面顺序找模型：
 
 1. 如果 `CW_MODEL_DIR` 已经有完整模型文件，直接使用
-2. 如果 `/data/models/Fun-ASR-Nano/Fun-ASR-Nano-GGUF/` 下已有模型，直接使用
-3. 如果没有模型，再下载 `Fun-ASR-Nano-GGUF.zip` 并解压到 `/data/models/...`
+2. 如果镜像内置的 `/app/Fun-ASR-Nano-GGUF/` 存在完整模型，直接使用
+3. 如果 `/data/models/Fun-ASR-Nano/Fun-ASR-Nano-GGUF/` 下已有模型，直接使用
+4. 如果没有模型，再下载 `Fun-ASR-Nano-GGUF.zip` 并解压到 `/data/models/...`
 
-主镜像默认不内置模型，这样镜像更轻，模型也可以复用宿主机挂载目录。
+当前 Docker 镜像默认已经内置 `Fun-ASR-Nano-GGUF`，这样首次启动不再依赖外网下载。
 
 ## API 示例
 
@@ -86,7 +87,7 @@ curl -F file=@sample.wav \
 - `/data/cache/...`：下载缓存
 - `/data/uploads/...`：运行时临时上传目录
 
-如果你已经手动下载好了模型，推荐额外挂载到：
+如果你想覆盖镜像内置模型，推荐额外挂载到：
 
 ```bash
 ./Fun-ASR-Nano-GGUF:/app/Fun-ASR-Nano-GGUF:ro

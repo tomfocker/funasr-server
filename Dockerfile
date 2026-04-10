@@ -30,6 +30,8 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     CW_DATA_DIR=/data \
+    CW_MODEL_DIR=/app/Fun-ASR-Nano-GGUF \
+    CW_AUTO_DOWNLOAD_MODEL=0 \
     CW_PORT=8000 \
     CW_VULKAN_ENABLE=0 \
     CW_DML_ENABLE=0 \
@@ -50,7 +52,9 @@ COPY . /app
 COPY --from=llama-builder /out/ /app/util/llama/bin/
 RUN mkdir -p /app/util/fun_asr_gguf/inference/bin \
  && cp -av /app/util/llama/bin/* /app/util/fun_asr_gguf/inference/bin/ \
- && chmod +x /app/scripts/start_api_service.sh
+ && chmod +x /app/scripts/start_api_service.sh \
+ && CW_DATA_DIR=/tmp/fun-asr-build-data CW_MODEL_DIR=/app/Fun-ASR-Nano-GGUF CW_AUTO_DOWNLOAD_MODEL=1 python3 scripts/bootstrap_fun_asr_env.py \
+ && rm -rf /tmp/fun-asr-build-data
 
 EXPOSE 8000
 VOLUME ["/data"]
